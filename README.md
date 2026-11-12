@@ -1,4 +1,5 @@
-# It's all AI created and looked over by me. code is still shit, and not made to last. i do not recomend using it for anything
+# It's all AI created. code is still shit, and not made to last. i do not recommend using it for anything
+
 # Read-only music indexer — Part 1
 
 Scans a music library for `.mp3`, `.m4a`, `.opus`, and `.mka` files and
@@ -10,7 +11,7 @@ writes their file details and available tags to a JSON index.
 - `mutagen` for MP3, M4A, and Opus metadata
 - `ffprobe` (from FFmpeg) for MKA metadata
 
-Install the Python dependency:
+Install the Python dependencies:
 
     python -m pip install -r requirements.txt
 
@@ -42,4 +43,46 @@ you explicitly pass `--replace-index`:
 - Original audio files are only read. The scanner does not tag, rename, move,
   delete, or rewrite them.
 
-python music_lookup.py indexed.json --output lookups.json
+## Music lookup — Part 2
+
+Looks up each indexed track on YouTube Music and lrc.red. Lookup results are
+stored separately from the original file tags.
+
+### Requirements
+
+- Python 3.10+
+- The Part 1 dependencies
+- `requests`
+- `ytmusicapi`
+
+Add `requests` and `ytmusicapi` to `requirements.txt`, then install:
+
+    python -m pip install -r requirements.txt
+
+### Run
+
+First create the index using Part 1. Then run:
+
+    python music_lookup.py indexed.json --output lookups.json
+
+The script waits at least 5 seconds between requests to YouTube Music and
+lrc.red. It writes lookup results to `lookups.json` and leaves the audio files
+unchanged.
+
+Use `--replace` to overwrite an existing output file:
+
+    python music_lookup.py indexed.json --output lookups.json --replace
+
+### Lookup behavior
+
+- Searches YouTube Music using available title, artist, album, and album-artist
+  tags.
+- Saves a confident match's video ID, returned metadata, and YouTube URL.
+- Searches lrc.red using available title, artist, album, duration, and ISRC
+  information.
+- Marks uncertain matches as `ambiguous` for review instead of silently
+  choosing one.
+- Stores lookup data separately from the original tags.
+
+The lrc.red search endpoint or response format may need adjustment to match
+its current API.
