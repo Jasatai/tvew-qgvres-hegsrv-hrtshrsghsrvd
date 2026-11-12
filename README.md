@@ -42,8 +42,4 @@ you explicitly pass `--replace-index`:
 - Original audio files are only read. The scanner does not tag, rename, move,
   delete, or rewrite them.
 
-## Project outline
-1. **Scan the music library**
-   - Find supported audio files: MP3, M4A, Opus, and MKA.
-   - Read available tags, including title, artist, album, album artist, track/disc number, duration, and ISRC.
-   - Record each original file path. Leave missing tag values empty rather than guessing.
+python music_lookup.py indexed.json --output lookups.json
