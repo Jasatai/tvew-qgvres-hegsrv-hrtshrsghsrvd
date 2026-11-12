@@ -1,1 +1,3 @@
-mutagen requests ytmusicapi
+mutagen
+requests
+ytmusicapi
