@@ -301,8 +301,27 @@ def main() -> int:
         key=lambda p: p.relative_to(root).as_posix().casefold(),
     )
 
-    tracks = [scan_track(path, root) for path in paths]
+    def without_artwork(value: Any) -> Any:
+        if isinstance(value, dict):
+            cleaned = {}
+            for key, item in value.items():
+                normalized = "".join(
+                    char for char in str(key).casefold() if char.isalnum()
+                )
+                if any(marker in normalized for marker in (
+                    "artwork", "albumart", "coverart", "picture", "image", "apic", "covr", "cover"
+                )):
+                    continue
+                cleaned[key] = without_artwork(item)
+            return cleaned
+        if isinstance(value, list):
+            return [without_artwork(item) for item in value]
+        return value
 
+    tracks = [
+        without_artwork(scan_track(path, root))
+        for path in paths
+    ]
     # Group identical content hashes. Empty hashes are not treated as duplicates.
     hash_groups: dict[str, list[dict[str, Any]]] = {}
     for track in tracks:
